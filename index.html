@@ -34,8 +34,10 @@
         return `Parts/${modelName}`;
       }
 
-      const viewer = document.getElementById('viewer');
-      viewer.setAttribute('src', getModelFromURL());
+      document.addEventListener('DOMContentLoaded', () => {
+        const viewer = document.getElementById('viewer');
+        viewer.setAttribute('src', getModelFromURL());
+      });
     </script>
   </body>
 </html>
