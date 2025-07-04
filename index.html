@@ -11,18 +11,16 @@
       camera-controls tone-mapping="neutral"
       poster="poster.webp"
       shadow-intensity="1" exposure="0.3" shadow-softness="1"
-      environment-image="legacy">
+      environment-image="legacy" alt="3D model viewer">
       
       <div class="progress-bar hide" slot="progress-bar">
         <div class="update-bar"></div>
       </div>
       
-      <button slot="ar-button" id="ar-button">
-        View in your space
-      </button>
+      <button slot="ar-button" id="ar-button">View in your space</button>
       
       <div id="ar-prompt">
-        <img src="ar_hand_prompt.png">
+        <img src="ar_hand_prompt.png" alt="AR prompt">
       </div>
     </model-viewer>
 
@@ -30,8 +28,10 @@
     <script>
       function getModelFromURL() {
         const params = new URLSearchParams(window.location.search);
-        const modelName = params.get('model') || 'Part1.glb'; // Default fallback
-        return Parts/${modelName};
+        const allowedModels = ['Part1.glb', 'Part2.glb', 'Part3.glb']; // Add your models here
+        const requestedModel = params.get('model');
+        const modelName = allowedModels.includes(requestedModel) ? requestedModel : 'Part1.glb';
+        return `Parts/${modelName}`;
       }
 
       const viewer = document.getElementById('viewer');
