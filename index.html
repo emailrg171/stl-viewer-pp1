@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>3D Model Viewer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" href="./styles.css" rel="stylesheet"/>
+  </head>
+  <body>
+    <model-viewer id="viewer" ar ar-modes="webxr scene-viewer quick-look"
+      camera-controls tone-mapping="neutral"
+      poster="poster.webp"
+      shadow-intensity="1" exposure="0.3" shadow-softness="1"
+      environment-image="legacy" alt="3D model viewer">
+      
+      <div class="progress-bar hide" slot="progress-bar">
+        <div class="update-bar"></div>
+      </div>
+      
+      <button slot="ar-button" id="ar-button">View in your space</button>
+      
+      <div id="ar-prompt">
+        <img src="ar_hand_prompt.png" alt="AR prompt">
+      </div>
+    </model-viewer>
+
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+    <script>
+      function getModelFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        
+        // Define allowed folders and models
+        const allowedFolders = ['Isometric Projections', 'Orthographic Projections'];
+        const allowedModels = {
+          'Isometric Projections': ['Part1.glb', 'Part2.glb', 'Part3.glb'],
+          'Orthographic Projections': ['Front.glb', 'Side.glb', 'Top.glb']
+        };
+        
+        // Get parameters from URL (default to Isometric/Part1.glb)
+        const folder = params.get('folder') || 'Isometric Projections';
+        const model = params.get('model') || 'Part1.glb';
+        
+        // Validate folder and model
+        const validFolder = allowedFolders.includes(folder) ? folder : 'Isometric Projections';
+        const validModel = allowedModels[validFolder]?.includes(model) ? model : allowedModels[validFolder][0];
+        
+        return `Parts/${validFolder}/${validModel}`;
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const viewer = document.getElementById('viewer');
+        viewer.setAttribute('src', getModelFromURL());
+      });
+    </script>
+  </body>
+</html>
