@@ -4,66 +4,47 @@
     <title>3D Model Viewer</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" href="./styles.css" rel="stylesheet"/>
     <style>
-      /* CSS Reset */
-      body, html {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-      }
-      
-      /* Model Viewer Container */
-      model-viewer {
-        width: 100%;
-        height: 100vh;
+      .view-buttons {
         position: absolute;
-        top: 0;
-        left: 0;
-      }
-      
-      /* View Controls */
-      .view-controls {
-        position: fixed;
-        bottom: 20px;
+        top: 20px;
         left: 20px;
         display: flex;
+        flex-direction: column;
         gap: 10px;
-        z-index: 1000; /* Higher than model-viewer */
+        z-index: 10;
       }
-      
-      .view-btn {
-        padding: 10px 15px;
-        background: #ffffff;
-        border: none;
-        border-radius: 4px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        font-family: Arial, sans-serif;
+
+      .view-buttons button {
+        padding: 8px 12px;
         font-size: 14px;
+        border: none;
+        background: #444;
+        color: white;
+        border-radius: 4px;
         cursor: pointer;
-        transition: background 0.2s;
+        opacity: 0.8;
       }
-      
-      .view-btn:hover {
-        background: #f0f0f0;
-      }
-      
-      /* AR Button Positioning */
-      #ar-button {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
+
+      .view-buttons button:hover {
+        opacity: 1;
       }
     </style>
   </head>
   <body>
+    <div class="view-buttons">
+      <button onclick="setView('front')">Front</button>
+      <button onclick="setView('top')">Top</button>
+      <button onclick="setView('left')">Left</button>
+    </div>
+
     <model-viewer id="viewer" ar ar-modes="webxr scene-viewer quick-look"
       camera-controls tone-mapping="neutral"
       poster="poster.webp"
       shadow-intensity="1" exposure="0.3" shadow-softness="1"
-      environment-image="legacy" alt="3D model viewer">
+      environment-image="legacy" alt="3D model viewer"
+      style="width: 100vw; height: 100vh; display: block;">
       
       <div class="progress-bar hide" slot="progress-bar">
         <div class="update-bar"></div>
@@ -76,13 +57,6 @@
       </div>
     </model-viewer>
 
-    <!-- View control buttons - NOW VISIBLE -->
-    <div class="view-controls">
-      <button class="view-btn" id="front-btn">Front</button>
-      <button class="view-btn" id="top-btn">Top</button>
-      <button class="view-btn" id="left-btn">Left</button>
-    </div>
-
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
     <script>
       function getModelFromURL() {
@@ -93,29 +67,26 @@
         return `Parts/${modelName}`;
       }
 
+      function setView(view) {
+        const viewer = document.getElementById('viewer');
+        switch(view) {
+          case 'front':
+            viewer.cameraOrbit = '0deg 90deg 2.5m';
+            break;
+          case 'top':
+            viewer.cameraOrbit = '0deg 0deg 2.5m';
+            break;
+          case 'left':
+            viewer.cameraOrbit = '90deg 90deg 2.5m';
+            break;
+        }
+      }
+
       document.addEventListener('DOMContentLoaded', () => {
         const viewer = document.getElementById('viewer');
         viewer.setAttribute('src', getModelFromURL());
-        
-        // View control functions with animation
-        const orbitTo = (theta, phi, radius = 1) => {
-          viewer.cameraOrbit = `${theta}rad ${phi}rad ${radius}m`;
-          viewer.cameraTarget = '0m 0m 0m'; // Reset target
-        };
-
-        // Button event listeners
-        document.getElementById('front-btn').addEventListener('click', () => {
-          orbitTo(0, 0); // Front view
-        });
-
-        document.getElementById('top-btn').addEventListener('click', () => {
-          orbitTo(0, Math.PI/2); // Top view
-        });
-
-        document.getElementById('left-btn').addEventListener('click', () => {
-          orbitTo(Math.PI/2, 0); // Left view
-        });
       });
     </script>
   </body>
 </html>
+
