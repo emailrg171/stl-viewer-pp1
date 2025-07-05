@@ -4,33 +4,57 @@
     <title>3D Model Viewer</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link type="text/css" href="./styles.css" rel="stylesheet"/>
     <style>
-      /* Add this to your existing CSS */
-      .view-controls {
+      /* CSS Reset */
+      body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      
+      /* Model Viewer Container */
+      model-viewer {
+        width: 100%;
+        height: 100vh;
         position: absolute;
+        top: 0;
+        left: 0;
+      }
+      
+      /* View Controls */
+      .view-controls {
+        position: fixed;
         bottom: 20px;
         left: 20px;
         display: flex;
         gap: 10px;
-        z-index: 10;
+        z-index: 1000; /* Higher than model-viewer */
       }
+      
       .view-btn {
-        padding: 8px 16px;
-        background: rgba(255,255,255,0.8);
-        border: 1px solid #ddd;
+        padding: 10px 15px;
+        background: #ffffff;
+        border: none;
         border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        font-family: Arial, sans-serif;
+        font-size: 14px;
         cursor: pointer;
-        font-family: sans-serif;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: background 0.2s;
       }
+      
       .view-btn:hover {
-        background: white;
+        background: #f0f0f0;
       }
+      
+      /* AR Button Positioning */
       #ar-button {
-        position: absolute;
+        position: fixed;
         bottom: 20px;
         right: 20px;
+        z-index: 1000;
       }
     </style>
   </head>
@@ -52,7 +76,7 @@
       </div>
     </model-viewer>
 
-    <!-- View control buttons -->
+    <!-- View control buttons - NOW VISIBLE -->
     <div class="view-controls">
       <button class="view-btn" id="front-btn">Front</button>
       <button class="view-btn" id="top-btn">Top</button>
@@ -73,9 +97,10 @@
         const viewer = document.getElementById('viewer');
         viewer.setAttribute('src', getModelFromURL());
         
-        // View control functions
+        // View control functions with animation
         const orbitTo = (theta, phi, radius = 1) => {
           viewer.cameraOrbit = `${theta}rad ${phi}rad ${radius}m`;
+          viewer.cameraTarget = '0m 0m 0m'; // Reset target
         };
 
         // Button event listeners
@@ -84,7 +109,7 @@
         });
 
         document.getElementById('top-btn').addEventListener('click', () => {
-          orbitTo(0, Math.PI/2); // Top view (looking straight down)
+          orbitTo(0, Math.PI/2); // Top view
         });
 
         document.getElementById('left-btn').addEventListener('click', () => {
