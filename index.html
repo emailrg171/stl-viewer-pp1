@@ -5,6 +5,34 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link type="text/css" href="./styles.css" rel="stylesheet"/>
+    <style>
+      /* Add this to your existing CSS */
+      .view-controls {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        display: flex;
+        gap: 10px;
+        z-index: 10;
+      }
+      .view-btn {
+        padding: 8px 16px;
+        background: rgba(255,255,255,0.8);
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: sans-serif;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .view-btn:hover {
+        background: white;
+      }
+      #ar-button {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style>
   </head>
   <body>
     <model-viewer id="viewer" ar ar-modes="webxr scene-viewer quick-look"
@@ -24,11 +52,18 @@
       </div>
     </model-viewer>
 
+    <!-- View control buttons -->
+    <div class="view-controls">
+      <button class="view-btn" id="front-btn">Front</button>
+      <button class="view-btn" id="top-btn">Top</button>
+      <button class="view-btn" id="left-btn">Left</button>
+    </div>
+
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
     <script>
       function getModelFromURL() {
         const params = new URLSearchParams(window.location.search);
-        const allowedModels = ['Part1.glb', 'Part2.glb', 'Part3.glb']; // Add your models here
+        const allowedModels = ['Part1.glb', 'Part2.glb', 'Part3.glb'];
         const requestedModel = params.get('model');
         const modelName = allowedModels.includes(requestedModel) ? requestedModel : 'Part1.glb';
         return `Parts/${modelName}`;
@@ -37,6 +72,24 @@
       document.addEventListener('DOMContentLoaded', () => {
         const viewer = document.getElementById('viewer');
         viewer.setAttribute('src', getModelFromURL());
+        
+        // View control functions
+        const orbitTo = (theta, phi, radius = 1) => {
+          viewer.cameraOrbit = `${theta}rad ${phi}rad ${radius}m`;
+        };
+
+        // Button event listeners
+        document.getElementById('front-btn').addEventListener('click', () => {
+          orbitTo(0, 0); // Front view
+        });
+
+        document.getElementById('top-btn').addEventListener('click', () => {
+          orbitTo(0, Math.PI/2); // Top view (looking straight down)
+        });
+
+        document.getElementById('left-btn').addEventListener('click', () => {
+          orbitTo(Math.PI/2, 0); // Left view
+        });
       });
     </script>
   </body>
