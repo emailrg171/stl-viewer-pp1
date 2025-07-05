@@ -6,6 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link type="text/css" href="./styles.css" rel="stylesheet"/>
     <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+
+      model-viewer {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+      }
+
       .view-buttons {
         position: absolute;
         top: 20px;
@@ -24,7 +35,7 @@
         color: white;
         border-radius: 4px;
         cursor: pointer;
-        opacity: 0.8;
+        opacity: 0.85;
       }
 
       .view-buttons button:hover {
@@ -33,31 +44,43 @@
     </style>
   </head>
   <body>
+
+    <!-- Botões de vista -->
     <div class="view-buttons">
       <button onclick="setView('front')">Front</button>
       <button onclick="setView('top')">Top</button>
       <button onclick="setView('left')">Left</button>
     </div>
 
-    <model-viewer id="viewer" ar ar-modes="webxr scene-viewer quick-look"
-      camera-controls tone-mapping="neutral"
+    <!-- Visualizador 3D -->
+    <model-viewer id="viewer"
+      ar
+      ar-modes="webxr scene-viewer quick-look"
+      camera-controls
+      camera-projection="orthographic"
+      tone-mapping="neutral"
       poster="poster.webp"
-      shadow-intensity="1" exposure="0.3" shadow-softness="1"
-      environment-image="legacy" alt="3D model viewer"
-      style="width: 100vw; height: 100vh; display: block;">
-      
+      shadow-intensity="1"
+      exposure="0.3"
+      shadow-softness="1"
+      environment-image="legacy"
+      alt="3D model viewer">
+
       <div class="progress-bar hide" slot="progress-bar">
         <div class="update-bar"></div>
       </div>
-      
+
       <button slot="ar-button" id="ar-button">View in your space</button>
-      
+
       <div id="ar-prompt">
         <img src="ar_hand_prompt.png" alt="AR prompt">
       </div>
     </model-viewer>
 
+    <!-- Importar model-viewer -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+
+    <!-- Script para carregar modelo e controlar vistas -->
     <script>
       function getModelFromURL() {
         const params = new URLSearchParams(window.location.search);
@@ -69,7 +92,7 @@
 
       function setView(view) {
         const viewer = document.getElementById('viewer');
-        switch(view) {
+        switch (view) {
           case 'front':
             viewer.cameraOrbit = '0deg 90deg 2.5m';
             break;
