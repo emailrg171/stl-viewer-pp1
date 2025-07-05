@@ -1,114 +1,115 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Visualizador Ortográfico 3D</title>
+    <title>3D Model Viewer</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" href="./styles.css" rel="stylesheet"/>
     <style>
       body {
         margin: 0;
-        padding: 0;
         overflow: hidden;
-        font-family: Arial, sans-serif;
-      }
-      
-      .view-buttons {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        z-index: 1000;
       }
 
-      .view-buttons button {
-        padding: 10px 15px;
-        font-size: 14px;
-        border: none;
-        background: #2c3e50;
-        color: white;
-        border-radius: 4px;
-        cursor: pointer;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        transition: all 0.2s;
-      }
-
-      .view-buttons button:hover {
-        background: #34495e;
-        transform: translateY(-2px);
-      }
-      
       model-viewer {
         width: 100vw;
         height: 100vh;
         display: block;
-        background-color: #f5f5f5;
       }
-      
-      #ar-button {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
+
+      .view-buttons {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 10;
+      }
+
+      .view-buttons button {
+        padding: 8px 12px;
+        font-size: 14px;
+        border: none;
+        background: #444;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        opacity: 0.85;
+      }
+
+      .view-buttons button:hover {
+        opacity: 1;
       }
     </style>
   </head>
   <body>
     <div class="view-buttons">
-      <button onclick="setOrthoView('front')">Vista Frontal</button>
-      <button onclick="setOrthoView('top')">Vista Superior</button>
-      <button onclick="setOrthoView('left')">Vista Lateral</button>
-      <button onclick="setOrthoView('iso')">Vista Isométrica</button>
+      <button onclick="setView('front')">Front</button>
+      <button onclick="setView('top')">Top</button>
+      <button onclick="setView('left')">Left</button>
     </div>
 
-    <model-viewer id="viewer" 
-      camera-controls 
-      auto-rotate
-      camera-orbit="45deg 55deg 2.5m"
-      field-of-view="30deg"
-      style="width: 100%; height: 100%">
+    <model-viewer id="viewer"
+      ar ar-modes="webxr scene-viewer quick-look"
+      camera-controls
+      camera-projection="orthographic"
+      camera-target="0m 0m 0m"
+      tone-mapping="neutral"
+      poster="poster.webp"
+      shadow-intensity="1"
+      exposure="0.3"
+      shadow-softness="1"
+      environment-image="legacy"
+      alt="3D model viewer">
       
-      <button slot="ar-button" id="ar-button">Ver em AR</button>
+      <div class="progress-bar hide" slot="progress-bar">
+        <div class="update-bar"></div>
+      </div>
+
+      <button slot="ar-button" id="ar-button">View in your space</button>
+
+      <div id="ar-prompt">
+        <img src="ar_hand_prompt.png" alt="AR prompt">
+      </div>
     </model-viewer>
 
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
-    <script>
-      // Configurações de vista ortográfica
-      const orthoConfig = {
-        front: { orbit: '0deg 90deg 100%', fov: '0.1deg' },
-        top:  { orbit: '0deg 0deg 100%',  fov: '0.1deg' },
-        left: { orbit: '90deg 90deg 100%', fov: '0.1deg' },
-        iso:  { orbit: '45deg 55deg 2.5m', fov: '30deg' }
-      };
 
-      function setOrthoView(view) {
-        const viewer = document.getElementById('viewer');
-        const config = orthoConfig[view];
-        
-        // Primeiro desativa a perspectiva
-        viewer.fieldOfView = config.fov;
-        
-        // Posiciona a câmera
-        viewer.cameraOrbit = config.orbit;
-        
-        // Configurações adicionais para vista ortográfica
-        if(view !== 'iso') {
-          viewer.cameraTarget = '0m 0m 0m';
-          viewer.jumpCameraToGoal();
-          viewer.shadowIntensity = 0; // Remove sombras para melhor clareza
-        } else {
-          viewer.shadowIntensity = 1; // Restaura sombras na vista 3D
-        }
+    <script>
+      function getModelFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        const allowedModels = ['Part1.glb', 'Part2.glb', 'Part3.glb'];
+        const requestedModel = params.get('model');
+        const modelName = allowedModels.includes(requestedModel) ? requestedModel : 'Part1.glb';
+        return `Parts/${modelName}`;
       }
 
-      // Carrega o modelo inicial
+      function setView(view) {
+        const viewer = document.getElementById('viewer');
+        viewer.cameraTarget = '0m 0m 0m';
+
+        switch(view) {
+          case 'front':
+            viewer.cameraOrbit = '0deg 90deg 2.5m';
+            break;
+          case 'top':
+            viewer.cameraOrbit = '0deg 0deg 2.5m';
+            break;
+          case 'left':
+            viewer.cameraOrbit = '90deg 90deg 2.5m';
+            break;
+        }
+
+        viewer.jumpCameraToGoal();
+      }
+
       document.addEventListener('DOMContentLoaded', () => {
         const viewer = document.getElementById('viewer');
-        viewer.src = 'Parts/Part1.glb'; // Altere para seu modelo
-        setOrthoView('iso'); // Inicia com vista isométrica
+        viewer.setAttribute('src', getModelFromURL());
+        viewer.setAttribute('camera-projection', 'orthographic');
+        viewer.setAttribute('camera-target', '0m 0m 0m');
       });
     </script>
   </body>
 </html>
-
