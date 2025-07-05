@@ -28,23 +28,10 @@
     <script>
       function getModelFromURL() {
         const params = new URLSearchParams(window.location.search);
-        
-        // Define allowed folders and models
-        const allowedFolders = ['Isometric Projections', 'Orthographic Projections'];
-        const allowedModels = {
-          'Isometric Projections': ['Part1.glb', 'Part2.glb', 'Part3.glb'],
-          'Orthographic Projections': ['Front.glb', 'Side.glb', 'Top.glb']
-        };
-        
-        // Get parameters from URL (default to Isometric/Part1.glb)
-        const folder = params.get('folder') || 'Isometric Projections';
-        const model = params.get('model') || 'Part1.glb';
-        
-        // Validate folder and model
-        const validFolder = allowedFolders.includes(folder) ? folder : 'Isometric Projections';
-        const validModel = allowedModels[validFolder]?.includes(model) ? model : allowedModels[validFolder][0];
-        
-        return `Parts/${validFolder}/${validModel}`;
+        const allowedModels = ['Part1.glb', 'Part2.glb', 'Part3.glb']; // Add your models here
+        const requestedModel = params.get('model');
+        const modelName = allowedModels.includes(requestedModel) ? requestedModel : 'Part1.glb';
+        return `Parts/${modelName}`;
       }
 
       document.addEventListener('DOMContentLoaded', () => {
