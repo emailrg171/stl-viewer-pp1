@@ -6,17 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link type="text/css" href="./styles.css" rel="stylesheet"/>
     <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-      }
-
-      model-viewer {
-        width: 100vw;
-        height: 100vh;
-        display: block;
-      }
-
       .view-buttons {
         position: absolute;
         top: 20px;
@@ -35,7 +24,7 @@
         color: white;
         border-radius: 4px;
         cursor: pointer;
-        opacity: 0.85;
+        opacity: 0.8;
       }
 
       .view-buttons button:hover {
@@ -50,45 +39,36 @@
       <button onclick="setView('left')">Left</button>
     </div>
 
-    <model-viewer id="viewer"
-      ar ar-modes="webxr scene-viewer quick-look"
-      camera-controls
-      camera-projection="orthographic"
-      camera-target="0m 0m 0m"
-      tone-mapping="neutral"
+    <model-viewer id="viewer" ar ar-modes="webxr scene-viewer quick-look"
+      camera-controls tone-mapping="neutral"
       poster="poster.webp"
-      shadow-intensity="1"
-      exposure="0.3"
-      shadow-softness="1"
-      environment-image="legacy"
-      alt="3D model viewer">
+      shadow-intensity="1" exposure="0.3" shadow-softness="1"
+      environment-image="legacy" alt="3D model viewer"
+      style="width: 100vw; height: 100vh; display: block;">
       
       <div class="progress-bar hide" slot="progress-bar">
         <div class="update-bar"></div>
       </div>
-
+      
       <button slot="ar-button" id="ar-button">View in your space</button>
-
+      
       <div id="ar-prompt">
         <img src="ar_hand_prompt.png" alt="AR prompt">
       </div>
     </model-viewer>
 
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
-
     <script>
       function getModelFromURL() {
         const params = new URLSearchParams(window.location.search);
         const allowedModels = ['Part1.glb', 'Part2.glb', 'Part3.glb'];
         const requestedModel = params.get('model');
         const modelName = allowedModels.includes(requestedModel) ? requestedModel : 'Part1.glb';
-        return `Parts/${modelName}`;
+        return Parts/${modelName};
       }
 
       function setView(view) {
         const viewer = document.getElementById('viewer');
-        viewer.cameraTarget = '0m 0m 0m';
-
         switch(view) {
           case 'front':
             viewer.cameraOrbit = '0deg 90deg 2.5m';
@@ -100,15 +80,11 @@
             viewer.cameraOrbit = '90deg 90deg 2.5m';
             break;
         }
-
-        viewer.jumpCameraToGoal();
       }
 
       document.addEventListener('DOMContentLoaded', () => {
         const viewer = document.getElementById('viewer');
         viewer.setAttribute('src', getModelFromURL());
-        viewer.setAttribute('camera-projection', 'orthographic');
-        viewer.setAttribute('camera-target', '0m 0m 0m');
       });
     </script>
   </body>
