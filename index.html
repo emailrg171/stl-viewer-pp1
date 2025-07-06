@@ -5,46 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link type="text/css" href="./styles.css" rel="stylesheet"/>
-    <style>
-      .view-buttons {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        z-index: 10;
-      }
-
-      .view-buttons button {
-        padding: 8px 12px;
-        font-size: 14px;
-        border: none;
-        background: #444;
-        color: white;
-        border-radius: 4px;
-        cursor: pointer;
-        opacity: 0.8;
-      }
-
-      .view-buttons button:hover {
-        opacity: 1;
-      }
-    </style>
   </head>
   <body>
-    <div class="view-buttons">
-      <button onclick="setView('front')">Front</button>
-      <button onclick="setView('top')">Top</button>
-      <button onclick="setView('left')">Left</button>
-    </div>
-
     <model-viewer id="viewer" ar ar-modes="webxr scene-viewer quick-look"
       camera-controls tone-mapping="neutral"
       poster="poster.webp"
       shadow-intensity="1" exposure="0.3" shadow-softness="1"
-      environment-image="legacy" alt="3D model viewer"
-      style="width: 100vw; height: 100vh; display: block;">
+      environment-image="legacy" alt="3D model viewer">
       
       <div class="progress-bar hide" slot="progress-bar">
         <div class="update-bar"></div>
@@ -61,25 +28,10 @@
     <script>
       function getModelFromURL() {
         const params = new URLSearchParams(window.location.search);
-        const allowedModels = ['Part1.glb', 'Part2.glb', 'Part3.glb'];
+        const allowedModels = ['Part1.glb', 'Part2.glb', 'Part3.glb']; // Add your models here
         const requestedModel = params.get('model');
         const modelName = allowedModels.includes(requestedModel) ? requestedModel : 'Part1.glb';
         return Parts/${modelName};
-      }
-
-      function setView(view) {
-        const viewer = document.getElementById('viewer');
-        switch(view) {
-          case 'front':
-            viewer.cameraOrbit = '0deg 90deg 2.5m';
-            break;
-          case 'top':
-            viewer.cameraOrbit = '0deg 0deg 2.5m';
-            break;
-          case 'left':
-            viewer.cameraOrbit = '90deg 90deg 2.5m';
-            break;
-        }
       }
 
       document.addEventListener('DOMContentLoaded', () => {
